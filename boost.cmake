@@ -1,22 +1,15 @@
 # -*- mode: cmake -*-
 
 
-cmake_dependent_option(ENABLE_BOOST "Enable build for Boost" ON
-    "ENABLE_TILEDARRAY_UNITTESTS" OFF)
-add_feature_info(Boost ENABLE_BOOST "Boost provides free peer-reviewed portable C++ source libraries.")
-
 # Check for Boost
-if(ENABLE_TILEDARRAY_UNITTESTS)
+if(ENABLE_BOOST)
   # Limit scope of the search if BOOST_ROOT or BOOST_INCLUDEDIR is provided.
   if(BOOST_ROOT OR BOOST_INCLUDEDIR)
     set(Boost_NO_SYSTEM_PATHS TRUE)
   endif()
 
-  if(ENABLE_BOOST)
-    find_package(Boost 1.33)
-  else()
-    find_package(Boost 1.33 REQUIRED)
-  end()
+  find_package(Boost 1.33)
+
 endif()
 
 if(Boost_FOUND)
@@ -42,6 +35,9 @@ if(Boost_FOUND)
   if (NOT BOOST_COMPILES)
     message(FATAL_ERROR "Boost found at ${BOOST_ROOT}, but could not compile test program")
   endif()
+  
+  # Add dummy target for to track dependencies between projects
+  add_custom_target(boost)
 
 elseif(ENABLE_BOOST)
 
@@ -49,7 +45,7 @@ elseif(ENABLE_BOOST)
   # Note: This will not overwrite user specified values.
   set(BOOST_DOWNLOAD_DIR "${PROJECT_BINARY_DIR}/boost/" CACHE PATH 
         "Path to the Boost download directory")
-  set(BOOST_SOURCE_DIR "${PROJECT_SOURCE_DIR}/boost/source/" CACHE PATH 
+  set(BOOST_SOURCE_DIR "${PROJECT_BINARY_DIR}/boost/source/" CACHE PATH 
         "Path to the Boost source directory")
   set(BOOST_BINARY_DIR "${PROJECT_BINARY_DIR}/boost/build/" CACHE PATH 
         "Path to the Boost build directory")
@@ -57,12 +53,11 @@ elseif(ENABLE_BOOST)
   set(BOOST_URL "http://downloads.sourceforge.net/project/boost/boost/1.57.0/boost_1_57_0.tar.gz" CACHE STRING 
         "Path to the Boost repository")
 
-
   message("** Will build Boost from ${BOOST_URL}")
 
   ExternalProject_Add(boost
     PREFIX ${CMAKE_INSTALL_PREFIX}
-    STAMP_DIR ${BOOST_BINARY_DIR}/stamp
+      STAMP_DIR ${CMAKE_BINARY_DIR}/stamp
    #--Download step--------------
     URL ${BOOST_URL}
     DOWNLOAD_DIR ${BOOST_DOWNLOAD_DIR}
@@ -72,7 +67,7 @@ elseif(ENABLE_BOOST)
    #--Build step-----------------
     BUILD_COMMAND ""
    #--Install step---------------
-    INSTALL_COMMAND "${CMAKE_COMMAND}" "-E" "copy_directory" "${BOOST_SOURCE_DIR}/boost/" "${BOOST_INSTALL_PREFIX}/include/boost/" 
+    INSTALL_COMMAND "${CMAKE_COMMAND}" "-E" "copy_if_different" "${BOOST_SOURCE_DIR}/boost/*" "${BOOST_INSTALL_PREFIX}/include/boost/" 
    #--Custom targets-------------
     STEP_TARGETS download
     )

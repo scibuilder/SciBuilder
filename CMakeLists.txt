@@ -41,24 +41,43 @@ include(FeatureSummary)
 # Add build options ============================================================
 
 # Add option for MPQC
-option(ENABLE_MPQC "Enable build for the MPQC project" OFF)
+option(ENABLE_MPQC "Enable the MPQC project" OFF)
 add_feature_info(MPQC ENABLE_MPQC "A massively-parallel, block-sparse tensor framework")
+cmake_dependent_option(DEV_MPQC "Enable developer mode for MPQC" OFF
+    "ENABLE_MPQC" OFF)
 
 # Add options for TiledArray
-option(ENABLE_TILEDARRAY "Enable build for the TiledArray project" ${ENABLE_MPQC})
+option(ENABLE_TILEDARRAY "Enable the TiledArray project" ${ENABLE_MPQC})
 add_feature_info(TiledArray ENABLE_TILEDARRAY "A massively-parallel, block-sparse tensor framework")
+cmake_dependent_option(DEV_TILEDARRAY "Enable developer mode for TiledArray" OFF
+    "ENABLE_TILEDARRAY" OFF)
 cmake_dependent_option(ENABLE_TILEDARRAY_UNITTESTS "Enable TiledArray unit test build" OFF
     "ENABLE_TILEDARRAY" OFF)
+cmake_dependent_option(ENABLE_BOOST "Enable build for Boost" ON
+    "ENABLE_TILEDARRAY_UNITTESTS" OFF)
+add_feature_info(Boost ENABLE_BOOST "Boost provides free peer-reviewed portable C++ source libraries.")
 
 # Add options for MADNESS
 option(ENABLE_MADNESS "Enable build for the MADNESS project" ${ENABLE_TILEDARRAY})
 add_feature_info(MADNESS ENABLE_MADNESS "Multiresolution Adaptive Numerical Environment for Scientific Simulation")
+cmake_dependent_option(DEV_MADNESS "Enable developer mode for MADNESS" OFF
+    "ENABLE_MADNESS" OFF)
+set(FORTRAN_INTEGER_SIZE 4 CACHE STRING "The fortran integer size (4 or 8 bytes) used for BLAS and LAPACK function calls")
+if(NOT (FORTRAN_INTEGER_SIZE EQUAL 4 OR FORTRAN_INTEGER_SIZE EQUAL 8))
+  message(FATAL_ERROR "Incorrect fortran integer size '${FORTRAN_INTEGER_SIZE}'\n"
+                       "FORTRAN_INTEGER_SIZE must be equal to 4 or 8")
+endif()
+
 
 # Add options for Elemental
 option(ENABLE_ELEMENTAL "Enable build for the Elemental project" OFF)
 add_feature_info(Elemental ENABLE_ELEMENTAL "Elemental provides parallel linear algebra")
+cmake_dependent_option(DEV_ELEMENTAL "Enable developer mode for Elemental" OFF
+    "ENABLE_ELEMENTAL" OFF)
     
 # Add common options
+option(ENABLE_MPI "Enable Message Passing Interface (MPI) Library" ON)
+add_feature_info(MPI ENABLE_MPI "Message Passing Interface")
 
 
 # Enable support for shared libraries ==========================================
@@ -70,14 +89,14 @@ cmake_dependent_option(BUILD_SHARED_LIBS "Enable shared libraries" ON
 
 # Check for and build packages
 include(lapack.cmake)
+include(mpi.cmake)
 include(boost.cmake)
 include(eigen.cmake)
-#include(mpi.cmake)
 #include(gperftools.cmake)
 #include(tbb.cmake)
 # Build target projects
 #include(elemental.cmake)
-#include(madness.cmake)
+include(madness.cmake)
 #include(tiledarray.cmake)
 #include(mpqc.cmake)
 

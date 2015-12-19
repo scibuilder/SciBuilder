@@ -1,40 +1,16 @@
 # -*- mode: cmake -*-
 
-
 cmake_dependent_option(ENABLE_EIGEN 
     "Build Eigen library if it is not found on the system" ON
     "ENABLE_TILEDARRAY" OFF)
 add_feature_info(Eigen ENABLE_EIGEN "Eigen is a C++ template library for linear algebra.")
 
 # Check for Eigen
-if(ENABLE_TILEDARRAY)
-  # Limit scope of the search if EIGEN_ROOT or EIGEN_INCLUDEDIR is provided.
-  if(EIGEN_ROOT OR EIGEN_INCLUDEDIR)
-    set(Eigen_NO_SYSTEM_PATHS TRUE)
-  endif()
-
-  if(ENABLE_EIGEN)
-    find_package(Eigen 3.0)
-  else()
-    find_package(Eigen 3.0 REQUIRED)
-  end()
+if(ENABLE_EIGEN)
+  find_package(Eigen 3.0)
 endif()
 
 if(EIGEN_FOUND)
-
-  # Create a cache entry for Eigen build variables.
-  # Note: This will not overwrite user specified values.
-  set(EIGEN_DOWNLOAD_DIR "${PROJECT_BINARY_DIR}/eigen/" CACHE PATH 
-        "Path to the Eigen download directory")
-  set(EIGEN_SOURCE_DIR "${PROJECT_SOURCE_DIR}/eigen/source/" CACHE PATH 
-        "Path to the Eigen source directory")
-  set(EIGEN_BINARY_DIR "${PROJECT_BINARY_DIR}/eigen/build/" CACHE PATH 
-        "Path to the Eigen build directory")
-  set(EIGEN_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
-  set(EIGEN_URL "https://bitbucket.org/eigen/eigen" CACHE STRING 
-        "Path to the Eigen repository")
-  set(EIGEN_TAG "3.2.4" CACHE STRING 
-        "The Eigen revision tag")
 
   cmake_push_check_state()
 
@@ -58,31 +34,43 @@ if(EIGEN_FOUND)
   if (NOT EIGEN_COMPILES)
     message(FATAL_ERROR "Eigen found at ${EIGEN_ROOT}, but could not compile test program")
   endif()
+  
+  # Add dummy target for to track dependencies between projects
+  add_custom_target(eigen3)
 
-elseif(ENABLE_BUILD_EIGEN)
+elseif(ENABLE_EIGEN)
 
+  # Create a cache entry for Eigen build variables.
+  # Note: This will not overwrite user specified values.
+  set(EIGEN_SOURCE_DIR "${PROJECT_BINARY_DIR}/eigen/source/" CACHE PATH 
+        "Path to the Eigen source directory")
+  set(EIGEN_BINARY_DIR "${PROJECT_BINARY_DIR}/eigen/build/" CACHE PATH 
+        "Path to the Eigen build directory")
+  set(EIGEN_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
+  set(EIGEN_URL "https://bitbucket.org/eigen/eigen" CACHE STRING 
+        "Path to the Eigen repository")
+  set(EIGEN_TAG "3.2.4" CACHE STRING 
+        "The Eigen revision tag")
 
   message("** Will build Eigen from ${EIGEN_URL}")
 
   ExternalProject_Add(eigen3
-    PREFIX ${CMAKE_INSTALL_PREFIX}
-   #--Download step--------------
-    HG_REPOSITORY ${EIGEN_URL}
-    HG_TAG ${EIGEN_TAG}
-   #--Configure step-------------
-    SOURCE_DIR ${EIGEN_SOURCE_DIR}
-    CONFIGURE_COMMAND ""
-   #--Build step-----------------
-    BUILD_COMMAND ""
-   #--Install step---------------
-    INSTALL_COMMAND ""
-   #--Custom targets-------------
-    INSTALL_COMMAND "${CMAKE_COMMAND}" "-E" "copy_directory" "${EIGEN_SOURCE_DIR}/eigen3/" "${EIGEN_INSTALL_PREFIX}/include/eigen3/" "&&"
-                    "${CMAKE_COMMAND}" "-E" "copy" "${EIGEN_SOURCE_DIR}/signature_of_eigen3_matrix_library" "${EIGEN_INSTALL_PREFIX}/include/eigen3/"
-   #--Custom targets-------------
-    STEP_TARGETS download
+      PREFIX ${CMAKE_INSTALL_PREFIX}
+      STAMP_DIR ${CMAKE_BINARY_DIR}/stamp
+     #--Download step--------------
+      HG_REPOSITORY ${EIGEN_URL}
+      HG_TAG ${EIGEN_TAG}
+     #--Configure step-------------
+      SOURCE_DIR ${EIGEN_SOURCE_DIR}
+      CMAKE_ARGS
+          -DCMAKE_INSTALL_PREFIX:path=${EIGEN_INSTALL_PREFIX}
+     #--Build step-----------------
+      BINARY_DIR ${EIGEN_BINARY_DIR}       # Specify build dir location
+     #--Install step---------------
+      INSTALL_DIR ${EIGEN_INSTALL_PREFIX} # Installation prefix
+     #--Custom targets-------------
     )
 
   set(EIGEN_INCLUDE_DIR ${EIGEN_INSTALL_PREFIX}/include/eigen3)
-
+else()
 endif()
