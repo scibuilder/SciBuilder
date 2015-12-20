@@ -17,42 +17,38 @@ elseif(ENABLE_MPI)
 
   set(MPICH_URL "http://www.mpich.org/static/downloads/3.1.4/mpich-3.1.4.tar.gz" CACHE STRING 
       "Path to the MPICH source tar ball")
-  set(MPICH_DOWNDLOAD_DIR "${PROJECT_BINARY_DIR}/madness/" CACHE PATH
+  set(MPICH_DOWNDLOAD_DIR "${PROJECT_BINARY_DIR}/mpich/" CACHE PATH
       "Path to MPICH download directory")
-  set(MPICH_SOURCE_DIR "${PROJECT_BINARY_DIR}/madness/source/" CACHE PATH
+  set(MPICH_SOURCE_DIR "${PROJECT_BINARY_DIR}/mpich/source/" CACHE PATH
       "Path to install MPICH")
-  set(MPICH_BUILD_DIR "${PROJECT_BINARY_DIR}/madness/build/" CACHE PATH
+  set(MPICH_BUILD_DIR "${PROJECT_BINARY_DIR}/mpich/build/" CACHE PATH
       "Path to install MPICH")
   set(MPICH_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE PATH
       "Path to install MPICH")
 
   message("** Will build MPICH from ${MPICH_URL}")
   
-
-  if(CMAKE_Fortran_COMPILER)
-    set(MPICH_FC_FLAG --FC=${CMAKE_Fortran_COMPILER})
-  else()
-    set(MPICH_FC_FLAG --disable-fortran)
-  endif()
-  
   ExternalProject_Add(mpi
-      PREFIX dir ${MPICH_INSTALL_PREFIX}
-      STAMP_DIR ${PROJECT_BINARY_DIR}/stamp
+      PREFIX "${MPICH_INSTALL_PREFIX}"
+      STAMP_DIR "${PROJECT_BINARY_DIR}/stamp"
      #--Download step--------------
-      DOWNLOAD_DIR ${MPICH_DOWNDLOAD_DIR}
-      URL ${MPICH_URL}
+      DOWNLOAD_DIR "${MPICH_DOWNDLOAD_DIR}"
+      URL "${MPICH_URL}"
      #--Configure step-------------
-      SOURCE_DIR ${MPICH_SOURCE_DIR}
+      SOURCE_DIR "${MPICH_SOURCE_DIR}"
       CONFIGURE_COMMAND "${MPICH_SOURCE_DIR}/configure"
-          "--prefix=${MPICH_INSTALL_PREFIX}" 
-          "--CC=${CMAKE_C_COMPILER}" 
-          "--CXX=${CMAKE_CXX_COMPILER}" 
-          "${MPICH_FC_FLAG}"
+          "--prefix=${MPICH_INSTALL_PREFIX}"
+          "--enable-threads=multiple"
+          "--enable-cxx"
+          "--disable-fortran" 
+          "CC=${CMAKE_C_COMPILER}" 
+          "CXX=${CMAKE_CXX_COMPILER}"
      #--Build step-----------------
-      BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
+      BINARY_DIR ${MPICH_BUILD_DIR}
+#      BUILD_COMMAND "$(CMAKE_MAKE_PROGRAM)"
      #--Install step---------------
-      INSTALL_DIR ${MPICH_INSTALL_PREFIX}
-      INSTALL_COMMAND ${CMAKE_MAKE_PROGRAM} install
+      INSTALL_DIR "${MPICH_INSTALL_PREFIX}"
+      INSTALL_COMMAND "${CMAKE_MAKE_PROGRAM}" "install"
   )
 
   set(MPI_FOUND TRUE)
