@@ -56,6 +56,8 @@ cmake_dependent_option(ENABLE_TILEDARRAY_UNITTESTS "Enable TiledArray unit test 
 cmake_dependent_option(ENABLE_BOOST "Enable build for Boost" ON
     "ENABLE_TILEDARRAY_UNITTESTS" OFF)
 add_feature_info(Boost ENABLE_BOOST "Boost provides free peer-reviewed portable C++ source libraries.")
+cmake_dependent_option(ENABLE_MINIMUAL_MADNESS "Build only world library for MADNESS" ON
+    "NOT DEFINED ENABLE_MADNESS;ENABLE_TILEDARRAY" OFF)
 
 # Add options for MADNESS
 option(ENABLE_MADNESS "Enable build for the MADNESS project" ${ENABLE_TILEDARRAY})

@@ -80,7 +80,29 @@ elseif(ENABLE_MADNESS)
   if(MPI_FOUND)
     list(APPEND MADNESS_DEPS mpi)
   endif()
+  
+  # Set the build command
+  if(ENABLE_MINIMUAL_MADNESS)
+    set(MADNESS_BUILD_CMD "${CMAKE_COMMAND}" "--build" "${MADNESS_BUILD_DIR}" 
+        "--target" "MADworld")
+  else()
+    set(MADNESS_BUILD_CMD "${CMAKE_COMMAND}" "--build" "${MADNESS_BUILD_DIR}")
+  endif()
 
+  # Set the install command
+  if(DEV_MADNESS)
+    set(MADNESS_INSTALL_CMD "${CMAKE_COMMAND}" "-E" 
+        "echo" "MADNESS install disabled in developer mode")
+  elseif(ENABLE_MINIMUAL_MADNESS)
+    set(MADNESS_INSTALL_CMD 
+                  "${CMAKE_COMMAND}" "--build" "${MADNESS_BUILD_DIR}" "--target" "install-world"
+        "COMMAND" "${CMAKE_COMMAND}" "--build" "${MADNESS_BUILD_DIR}" "--target" "install-clapack"
+        "COMMAND" "${CMAKE_COMMAND}" "--build" "${MADNESS_BUILD_DIR}" "--target" "install-common")
+  else()
+    set(MADNESS_INSTALL_CMD "${CMAKE_COMMAND}" "--build" "${MADNESS_BUILD_DIR}" 
+        "--target" "install")
+  endif()
+  
   ExternalProject_Add(madness
     DEPENDS ${MADNESS_DEPS}
     PREFIX ${MADNESS_INSTALL_PREFIX}
@@ -127,8 +149,10 @@ elseif(ENABLE_MADNESS)
 #        -DASSERTION_TYPE=${MAD_EXCEPTION}
    #--Build step-----------------
     BINARY_DIR ${MADNESS_BUILD_DIR}       # Specify build dir location
+    BUILD_COMMAND ${MADNESS_BUILD_CMD}
    #--Install step---------------
     INSTALL_DIR ${MADNESS_INSTALL_PREFIX} # Installation prefix
+    INSTALL_COMMAND ${MADNESS_INSTALL_CMD}
     )
 
 endif()
