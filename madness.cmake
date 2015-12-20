@@ -1,7 +1,7 @@
 # Find/build MADNESS ===========================================================
 
 # Check for MADNESS
-elseif(ENABLE_MADNESS AND NOT DEV_MADNESS)
+if(ENABLE_MADNESS AND NOT DEV_MADNESS)
   find_package(MADNESS 0.10.1 CONFIG QUIET HINTS ${MADNESS_ROOT_DIR})
 else()
   set(MADNESS_FOUND FALSE)
