@@ -56,15 +56,15 @@ if(MADNESS_FOUND)
   add_custom_target(madness)
   
 elseif(ENABLE_MADNESS)
-
+  
 
   set(MADNESS_URL "https://github.com/m-a-d-n-e-s-s/madness.git" CACHE STRING 
       "Path to the MADNESS repository")
   set(MADNESS_TAG "d2f41bde26d548c4b8b2b360b44fd6d75c61137e" CACHE STRING 
       "Revision hash or tag to use when building MADNESS")
-  set(MADNESS_SOURCE_DIR "${PROJECT_BINARY_DIR}/madness/source" CACHE PATH
+  set(MADNESS_SOURCE_DIR "${PROJECT_BINARY_DIR}/madness/source/" CACHE PATH
       "Path to install MADNESS")
-  set(MADNESS_BUILD_DIR "${PROJECT_BINARY_DIR}/madness/build" CACHE PATH
+  set(MADNESS_BUILD_DIR "${PROJECT_BINARY_DIR}/madness/build/" CACHE PATH
       "Path to install MADNESS")
   set(MADNESS_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE PATH
       "Path to install MADNESS")
@@ -73,6 +73,10 @@ elseif(ENABLE_MADNESS)
   
   if(ELEMENTAL_FOUND)
     list(APPEND MADNESS_DEPS elemental)
+  endif()
+
+  if(MPI_FOUND)
+    list(APPEND MADNESS_DEPS mpi)
   endif()
 
   ExternalProject_Add(madness

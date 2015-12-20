@@ -15,19 +15,19 @@
 # Copyright (c) 2009 Benoit Jacob <jacob.benoit.1@gmail.com>
 # Redistribution and use is allowed according to the terms of the 2-clause BSD license.
 
-if(NOT Eigen_FIND_VERSION)
-  if(NOT Eigen_FIND_VERSION_MAJOR)
-    set(Eigen_FIND_VERSION_MAJOR 2)
-  endif(NOT Eigen_FIND_VERSION_MAJOR)
-  if(NOT Eigen_FIND_VERSION_MINOR)
-    set(Eigen_FIND_VERSION_MINOR 91)
-  endif(NOT Eigen_FIND_VERSION_MINOR)
-  if(NOT Eigen_FIND_VERSION_PATCH)
-    set(Eigen_FIND_VERSION_PATCH 0)
-  endif(NOT Eigen_FIND_VERSION_PATCH)
+if(NOT EIGEN_FIND_VERSION)
+  if(NOT EIGEN_FIND_VERSION_MAJOR)
+    set(EIGEN_FIND_VERSION_MAJOR 2)
+  endif()
+  if(NOT EIGEN_FIND_VERSION_MINOR)
+    set(EIGEN_FIND_VERSION_MINOR 91)
+  endif()
+  if(NOT EIGEN_FIND_VERSION_PATCH)
+    set(EIGEN_FIND_VERSION_PATCH 0)
+  endif()
 
-  set(Eigen_FIND_VERSION "${Eigen_FIND_VERSION_MAJOR}.${Eigen_FIND_VERSION_MINOR}.${Eigen_FIND_VERSION_PATCH}")
-endif(NOT Eigen_FIND_VERSION)
+  set(Eigen_FIND_VERSION "${EIGEN_FIND_VERSION_MAJOR}.${EIGEN_FIND_VERSION_MINOR}.${EIGEN_FIND_VERSION_PATCH}")
+endif()
 
 macro(_eigen3_check_version)
   file(READ "${EIGEN_INCLUDE_DIR}/Eigen/src/Core/util/Macros.h" _eigen3_version_header)
@@ -73,7 +73,9 @@ else ()
   endif(EIGEN_INCLUDE_DIR)
 
   include(FindPackageHandleStandardArgs)
-  find_package_handle_standard_args(Eigen DEFAULT_MSG EIGEN_INCLUDE_DIR EIGEN_VERSION_OK)
+  find_package_handle_standard_args(EIGEN 
+      DEFAULT_MSG EIGEN_INCLUDE_DIR EIGEN_VERSION_OK
+      FOUND_VAR EIGEN_FOUND)
 
   mark_as_advanced(EIGEN_INCLUDE_DIR)
   SET(EIGEN_INCLUDE_DIRS ${EIGEN_INCLUDE_DIR} CACHE PATH "The Eigen include path.")

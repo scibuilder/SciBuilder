@@ -3,24 +3,60 @@
 if(ENABLE_MPI)
 
   # Try to find MPI
-  find_package(MPI REQUIRED)
-  
-  # Set the variables 
-  if(MPI_C_FOUND)
-    set(MPI_FOUND         ${MPI_C_FOUND})
-    string(STRIP "${MPI_C_COMPILE_FLAGS}" MPI_COMPILE_FLAGS)
-    set(MPI_INCLUDE_PATH  ${MPI_C_INCLUDE_PATH})
-    string(STRIP "${MPI_C_LINK_FLAGS}" MPI_LINK_FLAGS)
-    set(MPI_LIBRARIES     ${MPI_C_LIBRARIES})
-  elseif(MPI_CXX_FOUND)
-    set(MPI_FOUND         ${MPI_CXX_FOUND})
-    string(STRIP "${MPI_CXX_COMPILE_FLAGS}" MPI_COMPILE_FLAGS)
-    set(MPI_INCLUDE_PATH  ${MPI_CXX_INCLUDE_PATH})
-    string(STRIP "${MPI_CXX_LINK_FLAGS}" MPI_LINK_FLAGS)
-    set(MPI_LIBRARIES     ${MPI_CXX_LIBRARIES})
+  find_package(MPI)
 
+endif()
+
+if(MPI_FOUND)
+
+  
+  # Add dummy target for to track dependencies between projects
+  add_custom_target(mpi)
+
+elseif(ENABLE_MPI)
+
+  set(MPICH_URL "http://www.mpich.org/static/downloads/3.1.4/mpich-3.1.4.tar.gz" CACHE STRING 
+      "Path to the MPICH source tar ball")
+  set(MPICH_DOWNDLOAD_DIR "${PROJECT_BINARY_DIR}/madness/" CACHE PATH
+      "Path to MPICH download directory")
+  set(MPICH_SOURCE_DIR "${PROJECT_BINARY_DIR}/madness/source/" CACHE PATH
+      "Path to install MPICH")
+  set(MPICH_BUILD_DIR "${PROJECT_BINARY_DIR}/madness/build/" CACHE PATH
+      "Path to install MPICH")
+  set(MPICH_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE PATH
+      "Path to install MPICH")
+
+  message("** Will build MPICH from ${MPICH_URL}")
+  
+
+  if(CMAKE_Fortran_COMPILER)
+    set(MPICH_FC_FLAG --FC=${CMAKE_Fortran_COMPILER})
   else()
-    message(FATAL_ERROR "No suitable MPI compiler was not found.")
+    set(MPICH_FC_FLAG --disable-fortran)
   endif()
+  
+  ExternalProject_Add(mpi
+      PREFIX dir ${MPICH_INSTALL_PREFIX}
+      STAMP_DIR ${PROJECT_BINARY_DIR}/stamp
+     #--Download step--------------
+      DOWNLOAD_DIR ${MPICH_DOWNDLOAD_DIR}
+      URL ${MPICH_URL}
+     #--Configure step-------------
+      SOURCE_DIR ${MPICH_SOURCE_DIR}
+      CONFIGURE_COMMAND "${MPICH_SOURCE_DIR}/configure"
+          "--prefix=${MPICH_INSTALL_PREFIX}" 
+          "--CC=${CMAKE_C_COMPILER}" 
+          "--CXX=${CMAKE_CXX_COMPILER}" 
+          "${MPICH_FC_FLAG}"
+     #--Build step-----------------
+      BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
+     #--Install step---------------
+      INSTALL_DIR ${MPICH_INSTALL_PREFIX}
+      INSTALL_COMMAND ${CMAKE_MAKE_PROGRAM} install
+  )
+
+  set(MPI_FOUND TRUE)
+  set(MPI_C_COMPILER "${MPICH_INSTALL_PREFIX}/bin/mpicc")
+  set(MPI_CXX_COMPILER "${MPICH_INSTALL_PREFIX}/bin/mpicxx")
 
 endif()
