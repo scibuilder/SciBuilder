@@ -1,10 +1,5 @@
 # -*- mode: cmake -*-
 
-cmake_dependent_option(ENABLE_EIGEN 
-    "Build Eigen library if it is not found on the system" ON
-    "ENABLE_TILEDARRAY" OFF)
-add_feature_info(Eigen ENABLE_EIGEN "Eigen is a C++ template library for linear algebra.")
-
 # Check for Eigen
 if(ENABLE_EIGEN)
   find_package(Eigen 3.0)

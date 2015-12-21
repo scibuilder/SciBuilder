@@ -38,15 +38,21 @@ include(CheckCXXSourceCompiles)
 include(CMakePushCheckState)
 include(FeatureSummary)
 
-# Add build options ============================================================
 
-# Add option for MPQC
+# Add common options ===========================================================
+
+option(ENABLE_MPI "Enable Message Passing Interface (MPI) Library" ON)
+add_feature_info(MPI ENABLE_MPI "Message Passing Interface")
+
+# Add option for MPQC ==========================================================
+
 option(ENABLE_MPQC "Enable the MPQC project" OFF)
 add_feature_info(MPQC ENABLE_MPQC "A massively-parallel, block-sparse tensor framework")
 cmake_dependent_option(DEV_MPQC "Enable developer mode for MPQC" OFF
     "ENABLE_MPQC" OFF)
 
-# Add options for TiledArray
+# Add options for TiledArray ===================================================
+
 option(ENABLE_TILEDARRAY "Enable the TiledArray project" ${ENABLE_MPQC})
 add_feature_info(TiledArray ENABLE_TILEDARRAY "A massively-parallel, block-sparse tensor framework")
 cmake_dependent_option(DEV_TILEDARRAY "Enable developer mode for TiledArray" OFF
@@ -56,10 +62,15 @@ cmake_dependent_option(ENABLE_TILEDARRAY_UNITTESTS "Enable TiledArray unit test 
 cmake_dependent_option(ENABLE_BOOST "Enable build for Boost" ON
     "ENABLE_TILEDARRAY_UNITTESTS" OFF)
 add_feature_info(Boost ENABLE_BOOST "Boost provides free peer-reviewed portable C++ source libraries.")
+cmake_dependent_option(ENABLE_EIGEN 
+    "Build Eigen library if it is not found on the system" ON
+    "ENABLE_TILEDARRAY" OFF)
+add_feature_info(Eigen ENABLE_EIGEN "Eigen is a C++ template library for linear algebra.")
 cmake_dependent_option(ENABLE_MINIMUAL_MADNESS "Build only world library for MADNESS" ON
     "NOT DEFINED ENABLE_MADNESS;ENABLE_TILEDARRAY" OFF)
 
-# Add options for MADNESS
+# Add options for MADNESS ======================================================
+
 option(ENABLE_MADNESS "Enable build for the MADNESS project" ${ENABLE_TILEDARRAY})
 add_feature_info(MADNESS ENABLE_MADNESS "Multiresolution Adaptive Numerical Environment for Scientific Simulation")
 cmake_dependent_option(DEV_MADNESS "Enable developer mode for MADNESS" OFF
