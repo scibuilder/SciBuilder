@@ -107,7 +107,7 @@ include(mpi.cmake)
 include(boost.cmake)
 include(eigen.cmake)
 #include(gperftools.cmake)
-#include(tbb.cmake)
+include(tbb.cmake)
 # Build target projects
 #include(elemental.cmake)
 include(madness.cmake)

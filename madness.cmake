@@ -102,7 +102,7 @@ elseif(ENABLE_MADNESS)
    #--Configure step-------------
     SOURCE_DIR ${MADNESS_SOURCE_DIR}
     CMAKE_CACHE_ARGS
-        -DCMAKE_INSTALL_PREFIX:path=${MADNESS_INSTALL_PREFIX}
+        "-DCMAKE_INSTALL_PREFIX:path=${MADNESS_INSTALL_PREFIX}"
         -DBUILD_SHARED_LIBS:bool=${BUILD_SHARED_LIBS}
         -DCMAKE_BUILD_TYPE:string=${CMAKE_BUILD_TYPE}
         "-DCMAKE_C_COMPILER:filepath=${CMAKE_C_COMPILER}"
@@ -135,6 +135,7 @@ elseif(ENABLE_MADNESS)
         -DFORTRAN_INTEGER_SIZE:string=${FORTRAN_INTEGER_SIZE}
         -DENABLE_LIBXC:bool=ON
         -DENABLE_GPERFTOOLS:bool=OFF
+        "-DTBB_ROOT_DIR:path=${TBB_ROOT_DIR}"
 #        -DASSERTION_TYPE=${MAD_EXCEPTION}
    #--Build step-----------------
     BINARY_DIR ${MADNESS_BUILD_DIR}       # Specify build dir location
