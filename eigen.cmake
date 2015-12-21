@@ -29,23 +29,20 @@ if(EIGEN_FOUND)
   if (NOT EIGEN_COMPILES)
     message(FATAL_ERROR "Eigen found at ${EIGEN_ROOT}, but could not compile test program")
   endif()
-  
-  # Add dummy target for to track dependencies between projects
-  add_custom_target(eigen3)
 
 elseif(ENABLE_EIGEN)
 
   # Create a cache entry for Eigen build variables.
   # Note: This will not overwrite user specified values.
   set(EIGEN_SOURCE_DIR "${PROJECT_BINARY_DIR}/eigen/source/" CACHE PATH 
-        "Path to the Eigen source directory")
+      "Path to the Eigen source directory")
   set(EIGEN_BINARY_DIR "${PROJECT_BINARY_DIR}/eigen/build/" CACHE PATH 
-        "Path to the Eigen build directory")
-  set(EIGEN_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
+      "Path to the Eigen build directory")
+  set(EIGEN_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE PATH
+      "Path to install Eigen")
   set(EIGEN_URL "https://bitbucket.org/eigen/eigen" CACHE STRING 
-        "Path to the Eigen repository")
-  set(EIGEN_TAG "3.2.4" CACHE STRING 
-        "The Eigen revision tag")
+      "Path to the Eigen repository")
+  set(EIGEN_TAG "3.2.4" CACHE STRING "The Eigen revision tag")
 
   message("** Will build Eigen from ${EIGEN_URL}")
 
@@ -67,5 +64,8 @@ elseif(ENABLE_EIGEN)
     )
 
   set(EIGEN_INCLUDE_DIR ${EIGEN_INSTALL_PREFIX}/include/eigen3)
-else()
+  
+  # Add Eigen3 as a dependenecy to consuming projects.
+  list(APPEND TILEDARRAY_DEPENDS eigen3)
+
 endif()

@@ -7,14 +7,10 @@ if(ENABLE_MPI)
 
 endif()
 
-if(MPI_FOUND)
+if(ENABLE_MPI AND NOT MPI_FOUND)
 
-  
-  # Add dummy target for to track dependencies between projects
-  add_custom_target(mpi)
-
-elseif(ENABLE_MPI)
-
+  # Set default paths for MPICH
+  # This will not overwrite user defined valuse.
   set(MPICH_URL "http://www.mpich.org/static/downloads/3.1.4/mpich-3.1.4.tar.gz" CACHE STRING 
       "Path to the MPICH source tar ball")
   set(MPICH_DOWNDLOAD_DIR "${PROJECT_BINARY_DIR}/mpich/" CACHE PATH
@@ -28,7 +24,7 @@ elseif(ENABLE_MPI)
 
   message("** Will build MPICH from ${MPICH_URL}")
   
-  ExternalProject_Add(mpi
+  ExternalProject_Add(mpich
       PREFIX "${MPICH_INSTALL_PREFIX}"
       STAMP_DIR "${PROJECT_BINARY_DIR}/stamp"
      #--Download step--------------
@@ -54,5 +50,10 @@ elseif(ENABLE_MPI)
   set(MPI_FOUND TRUE)
   set(MPI_C_COMPILER "${MPICH_INSTALL_PREFIX}/bin/mpicc")
   set(MPI_CXX_COMPILER "${MPICH_INSTALL_PREFIX}/bin/mpicxx")
+
+
+  # Add MPICH as a dependenecy to consuming projects.
+  list(APPEND MADNESS_DEPENDS mpich)
+  list(APPEND ELEMENTAL_DEPENDS mpich)
 
 endif()

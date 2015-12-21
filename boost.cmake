@@ -35,9 +35,6 @@ if(Boost_FOUND)
   if (NOT BOOST_COMPILES)
     message(FATAL_ERROR "Boost found at ${BOOST_ROOT}, but could not compile test program")
   endif()
-  
-  # Add dummy target for to track dependencies between projects
-  add_custom_target(boost)
 
 elseif(ENABLE_BOOST)
 
@@ -73,6 +70,9 @@ elseif(ENABLE_BOOST)
     )
 
   set(Boost_INCLUDE_DIRS ${BOOST_INSTALL_PREFIX}/include/)
+  
+  # Add Boost as a dependenecy to consuming projects.
+  list(APPEND TILEDARRAY_DEPENDS boost)
 
 elseif(ENABLE_BUILD_BOOST)
 

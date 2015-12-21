@@ -80,17 +80,18 @@ if(NOT (FORTRAN_INTEGER_SIZE EQUAL 4 OR FORTRAN_INTEGER_SIZE EQUAL 8))
   message(FATAL_ERROR "Incorrect fortran integer size '${FORTRAN_INTEGER_SIZE}'\n"
                        "FORTRAN_INTEGER_SIZE must be equal to 4 or 8")
 endif()
+cmake_dependent_option(ENABLE_TBB "Enable build for TBB library" ON 
+    "ENABLE_MADNESS" OFF)
+cmake_dependent_option(ENABLE_LIBXC "Enable build for Libxc library" ON 
+    "ENABLE_MADNESS" OFF)
 
 
-# Add options for Elemental
+# Add options for Elemental ====================================================
+
 option(ENABLE_ELEMENTAL "Enable build for the Elemental project" OFF)
 add_feature_info(Elemental ENABLE_ELEMENTAL "Elemental provides parallel linear algebra")
 cmake_dependent_option(DEV_ELEMENTAL "Enable developer mode for Elemental" OFF
     "ENABLE_ELEMENTAL" OFF)
-    
-# Add common options
-option(ENABLE_MPI "Enable Message Passing Interface (MPI) Library" ON)
-add_feature_info(MPI ENABLE_MPI "Message Passing Interface")
 
 
 # Enable support for shared libraries ==========================================

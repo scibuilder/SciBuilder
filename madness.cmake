@@ -54,9 +54,6 @@ if(MADNESS_FOUND)
 
   cmake_pop_check_state()
   
-  # Add dummy target for to track dependencies between projects
-  add_custom_target(madness)
-  
 elseif(ENABLE_MADNESS)
   
 
@@ -72,14 +69,6 @@ elseif(ENABLE_MADNESS)
       "Path to install MADNESS")
 
   message("** Will build MADNESS from ${MADNESS_URL}")
-  
-  if(ELEMENTAL_FOUND)
-    list(APPEND MADNESS_DEPS elemental)
-  endif()
-
-  if(MPI_FOUND)
-    list(APPEND MADNESS_DEPS mpi)
-  endif()
   
   # Set the build command
   if(ENABLE_MINIMUAL_MADNESS)
@@ -104,7 +93,7 @@ elseif(ENABLE_MADNESS)
   endif()
   
   ExternalProject_Add(madness
-    DEPENDS ${MADNESS_DEPS}
+    DEPENDS ${MADNESS_DEPENDS}
     PREFIX ${MADNESS_INSTALL_PREFIX}
     STAMP_DIR ${PROJECT_BINARY_DIR}/stamp
    #--Download step--------------
