@@ -1,8 +1,7 @@
 # Find/build TBB ===============================================================
 
 if(ENABLE_TBB)
-#  find_package(TBB HINTS "${TBB_INSTALL_PREFIX}")
-  set(TBB_FOUND FALSE)
+  find_package(TBB HINTS "${TBB_INSTALL_PREFIX}")
 endif()
 
 if(ENABLE_TBB AND NOT TBB_FOUND)
