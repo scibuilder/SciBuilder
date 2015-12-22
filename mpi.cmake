@@ -34,20 +34,22 @@ if(ENABLE_MPI AND NOT MPI_FOUND)
       SOURCE_DIR "${MPICH_SOURCE_DIR}"
       CONFIGURE_COMMAND "${MPICH_SOURCE_DIR}/configure"
           "--prefix=${MPICH_INSTALL_PREFIX}"
+          "${ENABLE_SHARED}" 
+          "${ENABLE_STATIC}"
           "--enable-threads=multiple"
           "--enable-cxx"
-          "--disable-fortran" 
+          "--disable-fortran"
           "CC=${CMAKE_C_COMPILER}" 
           "CXX=${CMAKE_CXX_COMPILER}"
+          "CFLAGS=${CFLAGS}"
+          "CXXFLAGS=${CXXFLAGS}"
+          "LDFLAGS=${LDFLAGS}"
      #--Build step-----------------
       BINARY_DIR ${MPICH_BUILD_DIR}
-#      BUILD_COMMAND "$(CMAKE_MAKE_PROGRAM)"
      #--Install step---------------
       INSTALL_DIR "${MPICH_INSTALL_PREFIX}"
-      INSTALL_COMMAND "${CMAKE_MAKE_PROGRAM}" "install"
   )
 
-  set(MPI_FOUND TRUE)
   set(MPI_C_COMPILER "${MPICH_INSTALL_PREFIX}/bin/mpicc")
   set(MPI_CXX_COMPILER "${MPICH_INSTALL_PREFIX}/bin/mpicxx")
 

@@ -99,7 +99,41 @@ cmake_dependent_option(DEV_ELEMENTAL "Enable developer mode for Elemental" OFF
 get_property(SUPPORTS_SHARED GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS)
 cmake_dependent_option(BUILD_SHARED_LIBS "Enable shared libraries" ON
       "SUPPORTS_SHARED" OFF)
+if(BUILD_SHARED_LIBS)
+  set(ENABLE_SHARED "--enable-shared")
+  set(ENABLE_STATIC "--disable-static")
+else()
+  set(ENABLE_SHARED "--disable-shared")
+  set(ENABLE_STATIC "--enable-static")
+endif()
 
+
+# Set standard compile variables ===============================================
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(CFLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_DEBUG}")
+  set(CXXFLAGS "${CMAKE_CXX_COMPILE_FLAGS} ${CMAKE_CXX_COMPILE_FLAGS_DEBUG}")
+  set(LDFLAGS "${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_CXX_COMPILE_FLAGS_DEBUG}")
+elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+  set(CFLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_RELEASE}")
+  set(CXXFLAGS "${CMAKE_CXX_COMPILE_FLAGS} ${CMAKE_CXX_COMPILE_FLAGS_RELEASE}")
+  set(LDFLAGS "${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_CXX_COMPILE_FLAGS_RELEASE}")
+elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+  set(CFLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_RELWITHDEBINFO}")
+  set(CXXFLAGS "${CMAKE_CXX_COMPILE_FLAGS} ${CMAKE_CXX_COMPILE_FLAGS_RELWITHDEBINFO}")
+  set(LDFLAGS "${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_CXX_COMPILE_FLAGS_RELWITHDEBINFO}")
+elseif(CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
+  set(CFLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_MINSIZEREL}")
+  set(CXXFLAGS "${CMAKE_CXX_COMPILE_FLAGS} ${CMAKE_CXX_COMPILE_FLAGS_MINSIZEREL}")
+  set(LDFLAGS "${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_CXX_COMPILE_FLAGS_MINSIZEREL}")
+endif()
+
+string(STRIP "${CFLAGS}" CFLAGS)
+string(STRIP "${CXXFLAGS}" CXXFLAGS)
+string(STRIP "${LDFLAGS}" LDFLAGS)
+
+
+# Check for dependencies =======================================================
 
 # Check for and build packages
 include(lapack.cmake)
@@ -108,7 +142,10 @@ include(boost.cmake)
 include(eigen.cmake)
 #include(gperftools.cmake)
 include(tbb.cmake)
-# Build target projects
+include(libxc.cmake)
+
+# Build target projects ========================================================
+
 #include(elemental.cmake)
 include(madness.cmake)
 #include(tiledarray.cmake)

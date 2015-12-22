@@ -1,15 +1,17 @@
 # Find/build TBB ===============================================================
 
 if(ENABLE_TBB)
-  find_package(TBB HINTS "${TBB_INSTALL_PREFIX}")
+  find_package(TBB)
 endif()
 
 if(ENABLE_TBB AND NOT TBB_FOUND)
 
   set(TBB_VERSION "tbb44_20151115oss")
 
-  set(BOOST_DOWNLOAD_DIR "${PROJECT_BINARY_DIR}/tbb/" CACHE PATH 
-        "Path to the Boost download directory")
+  # Set default paths for TBB
+  # This will not overwrite user defined valuse.
+  set(TBB_DOWNLOAD_DIR "${PROJECT_BINARY_DIR}/tbb/" CACHE PATH 
+        "Path to the TBB download directory")
   set(TBB_SOURCE_DIR "${PROJECT_BINARY_DIR}/tbb/source/" CACHE PATH
       "Path to install TBB")
   set(TBB_BUILD_DIR "${PROJECT_BINARY_DIR}/tbb/build/" CACHE PATH
@@ -52,7 +54,7 @@ if(ENABLE_TBB AND NOT TBB_FOUND)
       PREFIX ${TBB_INSTALL_PREFIX}
       STAMP_DIR "${PROJECT_BINARY_DIR}/stamp"
      #--Download step--------------
-      DOWNLOAD_DIR "${BOOST_DOWNLOAD_DIR}"
+      DOWNLOAD_DIR "${TBB_DOWNLOAD_DIR}"
       URL "${TBB_URL}"
      #--Configure step-------------
       SOURCE_DIR "${TBB_SOURCE_DIR}"
