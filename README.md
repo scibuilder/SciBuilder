@@ -47,4 +47,14 @@ The default path is `${CMAKE_INSTALL_PREFIX}`.
 **NOTE** Required package dependencies are automatically enabled. For example,
 if `ENABLE_TILEDARRAY` is `ON`, `ENABLE_MADNESS` will also be set to `ON` but
 `ENABLE_ELEMENTAL` will be `OFF` since it is an optional dependency for 
-TiledArray. 
+TiledArray.
+
+## Install CMake
+
+SciBuilder includes a make file that automates downloading and building a recent
+version of CMake. To build and install cmake from the SciBuilder source 
+directory:
+```
+$ cd cmake
+$ make -j PREFIX=/path/to/install/cmake
+```
