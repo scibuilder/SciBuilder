@@ -3,7 +3,7 @@
 This is a super-project for MPQC,
 [TiledArray](https://github.com/ValeevGroup/tiledarray),
 [MADNESS](https://github.com/m-a-d-n-e-s-s/madness), and
-[Elmental](http://libelemental.org). It simplifies the process of installing
+[Elemental](https://github.com/elemental/Elemental). It simplifies the process of installing
 these packages, and select dependencies, on your system. When one or more of 
 these pacakges is enabled, the configure script searches for the packages. If a 
 package is not found, it will be automatically be download, configure, built,
